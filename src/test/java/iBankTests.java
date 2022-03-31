@@ -67,9 +67,9 @@ public class iBankTests {
                 .spec(requestSpec) // указываем, какую спецификацию используем
                 .body(gson.toJson(dummy)) // передаём в теле объект, который будет преобразован в JSON
                 .when() // "когда"
-                .post("/api/system/users"); // на какой путь, относительно BaseUri отправляем запрос
-//                .then() // "тогда ожидаем"
-//                .statusCode(200); // код 200 OK
+                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
+                .then() // "тогда ожидаем"
+                .statusCode(200); // код 200 OK
         $("[data-test-id=\"login\"] .input__control").setValue(dummy.getLogin());
         $("[data-test-id=\"password\"] .input__control").setValue(dummy.getPassword());
         $(".form-field [data-test-id=\"action-login\"]").click();
@@ -79,9 +79,9 @@ public class iBankTests {
                 .spec(requestSpec) // указываем, какую спецификацию используем
                 .body(gson.toJson(dummy)) // передаём в теле объект, который будет преобразован в JSON
                 .when() // "когда"
-                .post("/api/system/users"); // на какой путь, относительно BaseUri отправляем запрос
-//                .then() // "тогда ожидаем"
-//                .statusCode(200); // код 200 OK
+                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
+                .then() // "тогда ожидаем"
+                .statusCode(200); // код 200 OK
     }
 
     @Test
