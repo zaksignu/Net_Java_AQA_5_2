@@ -1,29 +1,26 @@
-import com.codeborne.selenide.Condition;
+
 import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.AfterEach;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
 import java.util.Locale;
 
 import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 import static io.restassured.RestAssured.given;
 
-public class iBankTests
-{
+public class iBankTests {
     static UserDefine dummy;
     static Faker ghostOne = new Faker(new Locale("EN"));
 
-     private static RequestSpecification requestSpec = new RequestSpecBuilder()
+    private static RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
             .setPort(9999)
             .setAccept(ContentType.JSON)
@@ -33,7 +30,6 @@ public class iBankTests
 
     @BeforeAll
     static void setUpAll() {
-
         Gson gson = new Gson();
         dummy = new UserDefine(
                 ghostOne.name().username(),
@@ -48,28 +44,23 @@ public class iBankTests
                 .then() // "тогда ожидаем"
                 .statusCode(200); // код 200 OK
     }
+
     @BeforeEach
-    public void startUp(){
+    public void startUp() {
         open("http://localhost:9999");
     }
 
+
     @Test
-    public void shouldWorkWithHappyPath(){
-        $("[data-test-id=\"login\"] .input__control").setValue(dummy.getLogin());
-        $("[data-test-id=\"password\"] .input__control").setValue(dummy.getPassword());
-        $(".form-field [data-test-id=\"action-login\"]").click();
-        $("#root .heading").shouldHave(text("Личный кабинет"),Duration.ofSeconds(10));
-}
-    @Test
-    public void shouldNotWorkWithInvalidUser(){
+    public void shouldNotWorkWithInvalidUser() {
         $("[data-test-id=\"login\"] .input__control").setValue(ghostOne.name().name());
         $("[data-test-id=\"password\"] .input__control").setValue(dummy.getPassword());
         $(".form-field [data-test-id=\"action-login\"]").click();
-        $("[data-test-id=\"error-notification\"] .notification__content").shouldHave(text("Ошибка! Неверно указан логин или пароль"),Duration.ofSeconds(10));
+        $("[data-test-id=\"error-notification\"] .notification__content").shouldHave(text("Ошибка! Неверно указан логин или пароль"));
     }
 
     @Test
-    public void shouldNotWorkInvalidUserStatus(){
+    public void shouldNotWorkInvalidUserStatus() {
         Gson gson = new Gson();
         dummy.setStatus("blocked");
         given() // "дано"
@@ -82,30 +73,41 @@ public class iBankTests
         $("[data-test-id=\"login\"] .input__control").setValue(dummy.getLogin());
         $("[data-test-id=\"password\"] .input__control").setValue(dummy.getPassword());
         $(".form-field [data-test-id=\"action-login\"]").click();
-        $("[data-test-id=\"error-notification\"] .notification__content").shouldHave(text("Ошибка! Пользователь заблокирован"),Duration.ofSeconds(10));
-
+        $("[data-test-id=\"error-notification\"] .notification__content").shouldHave(text("Ошибка! Пользователь заблокирован"));
+        dummy.setStatus("active");
+        given() // "дано"
+                .spec(requestSpec) // указываем, какую спецификацию используем
+                .body(gson.toJson(dummy)) // передаём в теле объект, который будет преобразован в JSON
+                .when() // "когда"
+                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
+                .then() // "тогда ожидаем"
+                .statusCode(200); // код 200 OK
     }
 
     @Test
-    public void shouldNotWorkInvalidUserPass(){
+    public void shouldNotWorkInvalidUserPass() {
         $("[data-test-id=\"login\"] .input__control").setValue(dummy.getLogin());
         $("[data-test-id=\"password\"] .input__control").setValue(ghostOne.name().name());
         $(".form-field [data-test-id=\"action-login\"]").click();
-        $("[data-test-id=\"error-notification\"] .notification__content").shouldHave(text("Ошибка! Неверно указан логин или пароль"),Duration.ofSeconds(10));
+        $("[data-test-id=\"error-notification\"] .notification__content").shouldHave(text("Ошибка! Неверно указан логин или пароль"));
 
     }
 
     @Test
-    public void shouldNotWorkNotRegistredUser(){
+    public void shouldNotWorkNotRegistredUser() {
         $("[data-test-id=\"login\"] .input__control").setValue(ghostOne.name().name());
         $("[data-test-id=\"password\"] .input__control").setValue(ghostOne.name().name());
         $(".form-field [data-test-id=\"action-login\"]").click();
-        $("[data-test-id=\"error-notification\"] .notification__content").shouldHave(text("Ошибка! Неверно указан логин или пароль"),Duration.ofSeconds(10));
-
+        $("[data-test-id=\"error-notification\"] .notification__content").shouldHave(text("Ошибка! Неверно указан логин или пароль"));
     }
-//    @AfterEach
-//    public void cleaning(){
-//        closeWindow();
-//        cleaning();
-//    }
+
+    @Test
+    public void shouldWorkWithHappyPath() {
+        dummy.setStatus("active");
+        $("[data-test-id=\"login\"] .input__control").setValue(dummy.getLogin());
+        $("[data-test-id=\"password\"] .input__control").setValue(dummy.getPassword());
+        $(".form-field [data-test-id=\"action-login\"]").click();
+        $("#root .heading").shouldHave(text("Личный кабинет"));
+    }
+
 }
