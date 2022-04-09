@@ -18,15 +18,11 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured:4.3.0'
     testImplementation 'com.google.code.gson:gson:2.8.6'
 
-    compileOnly 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
-
     testCompileOnly 'org.projectlombok:lombok:1.18.22'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-    implementation 'com.github.javafaker:javafaker:1.0.2'
-    testImplementation "io.github.bonigarcia:webdrivermanager:5.1.0"
-    implementation 'com.codeborne:selenide:6.3.5'
+    testImplementation 'com.github.javafaker:javafaker:1.0.2'
+    testImplementation 'com.codeborne:selenide:6.3.5'
 }
 
 test {
